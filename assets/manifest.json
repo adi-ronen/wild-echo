@@ -1,0 +1,19 @@
+{
+  "schema": "wild-echo/manifest/1",
+  "note": "Every shipped asset and every stated fact gets a row here. Missing field or expired recheck date fails the build. The gate is provenance, not truth: it enforces that a claim has a named source that supports it, not that the claim is correct. Truth is the Research Lead's craft.",
+  "assets": [
+    {
+      "id": "placeholder-howl",
+      "kind": "audio",
+      "path": "src/reference.js",
+      "description": "Synthesized howl-shaped tone. Generated in-browser by this repository's own code.",
+      "source": "self:zvuvim/wild-echo/src/reference.js",
+      "license": "CC0-1.0",
+      "attribution": "Zvuvim",
+      "verified": "2026-07-27",
+      "recheck": "2027-07-27",
+      "synthesized": true
+    }
+  ],
+  "facts": []
+}
