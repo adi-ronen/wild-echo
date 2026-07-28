@@ -1,24 +1,40 @@
-// The reference call the person imitates.
+// The reference calls a person imitates.
 //
-// HONEST LABEL, READ THIS BEFORE USING ANY NUMBER OUT OF THIS PROTOTYPE:
-// the call below is SYNTHESIZED. It is not a wolf. It is an oscillator following
-// a hand-written pitch contour that has roughly the shape of a howl. It exists
-// so the prototype runs today without shipping audio whose licence has not been
-// verified — hard rule 2 — and it is enough to test the pitch tracker, the
-// canvas, the playback and the metrics.
+// As of 2026-07-28 the first one is REAL: a black-throated loon recorded in
+// Sweden, released by its recordist under CC0, verified per file at the source
+// and not per site — see assets/manifest.json and ASSETS.md.
 //
-// It is NOT enough to run kill-line #1. A person imitating a synthesizer is
-// imitating a synthesizer. The 30-recording run needs a real, licence-verified
-// animal recording with a complete manifest row, or the result measures the
-// wrong thing. See assets/manifest.json and ASSETS.md.
+// The synthesized howl that stood here before is kept below as a fallback, and
+// only as a fallback: if the audio file fails to load, the app says so in the
+// interface rather than quietly substituting an oscillator for an animal. A
+// person imitating a synthesizer is imitating a synthesizer, and any number
+// taken from that measures the wrong thing.
 
-export const REFERENCE = {
+export const REFERENCES = [
+  {
+    id: 'black-throated-loon-XC803905',
+    kind: 'file',
+    url: new URL('../assets/audio/black-throated-loon-XC803905-clip.wav', import.meta.url).href,
+    animal: 'Black-throated loon',
+    species: 'Gavia arctica',
+    label: 'Black-throated loon (Gavia arctica) — real recording',
+    synthesized: false,
+    credit: 'Grégoire Chauvot, XC803905, xeno-canto.org/803905, CC0 1.0',
+    // What the recording is, said plainly, so nobody has to infer it from a
+    // filename: one call trimmed out of a longer bout on a lake at night.
+    note: 'One call, trimmed from a longer recording made on a Swedish lake in May.',
+  },
+];
+
+// Fallback only. Never a silent substitute for a real call — see the header.
+export const SYNTH_FALLBACK = {
   id: 'placeholder-howl',
-  label: 'Placeholder howl (synthesized — not a wolf)',
+  kind: 'synth',
+  animal: 'Nothing',
+  label: 'Synthesized placeholder — not an animal',
   synthesized: true,
   seconds: 3.4,
   // [time fraction, frequency Hz] — a slow rise, a long held top, a slow fall.
-  // The shape a wolf howl has; none of the timbre a wolf howl has.
   points: [
     [0.00, 180],
     [0.08, 300],
@@ -31,9 +47,28 @@ export const REFERENCE = {
   ],
 };
 
-/** Render the reference to an AudioBuffer at the given context's rate. */
-export function renderReference(sampleRate = 44100) {
-  const n = Math.round(REFERENCE.seconds * sampleRate);
+/**
+ * Load a reference to an AudioBuffer.
+ * Throws if a file-backed reference cannot be fetched or decoded. The caller
+ * surfaces that; it does not paper over it.
+ */
+export async function loadReferenceBuffer(ref) {
+  if (ref.kind === 'synth') return renderSynth(ref);
+
+  const res = await fetch(ref.url);
+  if (!res.ok) throw new Error(`reference audio ${ref.id}: HTTP ${res.status}`);
+  const bytes = await res.arrayBuffer();
+  const ctx = new AudioContext();
+  try {
+    return await ctx.decodeAudioData(bytes);
+  } finally {
+    await ctx.close();
+  }
+}
+
+/** Render the synthesized fallback to an AudioBuffer. */
+export async function renderSynth(ref = SYNTH_FALLBACK, sampleRate = 44100) {
+  const n = Math.round(ref.seconds * sampleRate);
   const off = new OfflineAudioContext(1, n, sampleRate);
   const buf = off.createBuffer(1, n, sampleRate);
   const ch = buf.getChannelData(0);
@@ -41,7 +76,7 @@ export function renderReference(sampleRate = 44100) {
   let phase = 0;
   for (let i = 0; i < n; i++) {
     const frac = i / n;
-    const f = freqAt(frac);
+    const f = freqAt(ref.points, frac);
     phase += (2 * Math.PI * f) / sampleRate;
     // A few harmonics so it is audible as a voice-like tone rather than a beep.
     const s = Math.sin(phase) + 0.35 * Math.sin(2 * phase) + 0.12 * Math.sin(3 * phase);
@@ -55,17 +90,16 @@ export function renderReference(sampleRate = 44100) {
   return off.startRendering();
 }
 
-function freqAt(frac) {
-  const p = REFERENCE.points;
-  for (let i = 1; i < p.length; i++) {
-    if (frac <= p[i][0]) {
-      const [t0, f0] = p[i - 1], [t1, f1] = p[i];
+function freqAt(points, frac) {
+  for (let i = 1; i < points.length; i++) {
+    if (frac <= points[i][0]) {
+      const [t0, f0] = points[i - 1], [t1, f1] = points[i];
       const u = (frac - t0) / (t1 - t0 || 1);
       const eased = u * u * (3 - 2 * u); // smoothstep, no corners in the pitch
       return f0 * Math.pow(f1 / f0, eased); // interpolate in log-frequency
     }
   }
-  return p[p.length - 1][1];
+  return points[points.length - 1][1];
 }
 
 function envelope(frac) {

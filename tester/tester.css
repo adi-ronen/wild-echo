@@ -1,0 +1,47 @@
+/* The tester session page. Everything shared lives in ../style.css; this file
+   is only the parts that page does not have — long readable consent copy, the
+   agreement controls, and the not-approved interlock. */
+
+.consent h3 {
+  margin: 20px 0 6px;
+  font-size: 15px;
+  color: var(--ink);
+}
+.consent h3:first-of-type { margin-top: 6px; }
+.consent p, .consent li { font-size: 15px; }
+.consent ul { margin: 6px 0 10px; padding-left: 22px; }
+.consent li { margin-bottom: 4px; }
+
+.draft-mark {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--no);
+  background: #231613;
+  color: #f0b8a8;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.blocked { border-color: var(--no); }
+.blocked h2 { color: var(--no); }
+
+.agree {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.agree label { display: block; margin-bottom: 10px; font-size: 15px; }
+.agree input[type="checkbox"] { margin-right: 8px; }
+.agree p label { display: inline; margin-right: 8px; color: var(--dim); font-size: 13px; }
+.agree .hint { display: block; margin-top: 6px; }
+
+#flags label { display: block; margin-bottom: 8px; font-size: 15px; }
+#flags input { margin-right: 8px; }
+#flags { margin-bottom: 16px; }
+
+button.secondary { background: transparent; }
+
+#finish-status { color: var(--dim); font-size: 14px; min-height: 1.5em; }
+
+#result h3 { margin: 22px 0 6px; font-size: 13px; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--dim); }

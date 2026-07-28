@@ -65,14 +65,45 @@ A microphone needs a secure context — `localhost` or HTTPS. Opening
 `index.html` from the filesystem will not work, because ES modules and
 `getUserMedia` both refuse `file://`.
 
+## The reference call
+
+One call of a **black-throated loon** (*Gavia arctica*), trimmed from
+[XC803905](https://xeno-canto.org/803905) — recorded in Sweden by Grégoire
+Chauvot and released under **CC0 1.0**, verified per file on the recording's own
+page. `ASSETS.md` records what was checked, what was rejected, and why.
+
+## The tester session page
+
+`tester/` — served at `zvuv.im/wild-echo/tester/`. This is what a person gets at
+the end of a link when they help run kill-line #1: consent, hear the call, one
+take, and a small file of numbers they choose to send back.
+
+Three things about it are worth reading before judging the design:
+
+- **One take, nothing discarded.** No retry button. A take that goes badly is a
+  result, and it is counted.
+- **Nothing is uploaded, because there is nowhere to upload to.** GitHub Pages
+  is static. The results come back as a file the tester saves and sends. That is
+  a real weakness — it depends on a person — and it beats putting a stranger's
+  voice on a third party's server.
+- **The code in the link is a label, not a lock.** A static page can only check
+  a password in code the visitor can read. So it does not pretend: the page says
+  outright that anyone holding the link can open it, and the code exists so ten
+  people's results can be told apart without using anybody's name.
+
+Recording is switched **off** until `tester/config.json` has
+`"consentApproved": true`. That flag is Adi's to flip, not Tal's — the consent
+wording it gates is a promise made to another person.
+
 ## Checks
 
 ```sh
-node scripts/test-pitch.mjs      # pitch tracker against signals of known f0
-node scripts/check-manifest.mjs  # provenance gate
+node scripts/test-pitch.mjs       # pitch tracker against signals of known f0
+node scripts/check-manifest.mjs   # provenance gate  — every asset has a licence
+node scripts/check-no-upload.mjs  # privacy gate     — nothing can send anything
 ```
 
-Both run in CI on every pull request.
+All three run in CI on every pull request.
 
 ## Your voice stays here
 
@@ -80,6 +111,11 @@ There is no upload path in this codebase. Recording happens in the browser,
 analysis happens in the browser, and the export button writes pitch contours and
 metrics — never audio. `.gitignore` blocks recordings from entering the
 repository at all. See `ASSETS.md`.
+
+`scripts/check-no-upload.mjs` keeps that true by machine rather than by memory:
+it fails the build on sendBeacon, XMLHttpRequest, WebSocket, a form, a non-GET
+fetch, or a telemetry snippet anywhere in the shipped source. It was tested by
+making it fail.
 
 ## Accessibility
 
@@ -96,13 +132,16 @@ Decided now, while it is still cheap:
 
 ## What is tape, right now
 
-- **The reference call is synthesized.** It is not a wolf. It is here so the
-  prototype runs today without shipping audio whose licence has not been
-  verified. It is enough to test the tracker; it is *not* enough to run
-  kill-line #1, because a person imitating a synthesizer is imitating a
-  synthesizer.
-- **No real animal audio exists yet.** The animal list will be shaped by what is
-  licensed, not by what would be nice.
+- **One animal, not three.** The reference call is a real, CC0, licence-verified
+  black-throated loon (XC803905). Kill-line #1 asks for three calls; two of them
+  do not exist yet, and the animal list is shaped by what is licensed, not by
+  what would be nice.
+- **The tester page has never met a tester.** It has been driven end to end in a
+  real browser with a fake microphone, which is not the same thing as ten adults
+  on ten kitchen tables.
+- **Results come back by hand.** A static page has no server to receive them, so
+  the tester saves a file and sends it. That depends on a person doing a thing,
+  which is the weakest link in the whole run and is stated rather than hidden.
 - **Time alignment is naive** — both traces start at their first voiced frame.
   Good enough to see a shape, wrong for anything that depends on rhythm.
 - **The tracker has only been tested against synthetic signals.** Breathy
@@ -117,10 +156,12 @@ style.css
 src/pitch.js          YIN f0 estimation + traceability metrics + shape description
 src/audio.js          capture, decode, downsample, playback
 src/draw.js           two contours on shared log-frequency axes
-src/reference.js      the synthesized placeholder call (labelled as such)
+src/reference.js      the real reference call, and the synth fallback
 src/main.js           wiring
+assets/audio/         licensed audio — the only place audio may enter the repo
 assets/manifest.json  provenance rows — the gate reads this
-scripts/              the gate and the pitch tests
+tester/               the one-take session page for kill-line #1 subjects
+scripts/              the gates and the pitch tests
 ```
 
 ---

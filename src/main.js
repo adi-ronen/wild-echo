@@ -1,6 +1,6 @@
 import { contour, traceability, describeShape, KILL_LINE_1A, ANALYSIS_RATE } from './pitch.js';
 import { recordClip, toAnalysisSamples, decodeToBuffer, resample, playSequence } from './audio.js';
-import { REFERENCE, renderReference } from './reference.js';
+import { REFERENCES, loadReferenceBuffer } from './reference.js';
 import { drawTraces, COLORS } from './draw.js';
 
 const el = (id) => document.getElementById(id);
@@ -20,17 +20,31 @@ const state = {
 
 // ---------------------------------------------------------------- reference
 
+const REFERENCE = REFERENCES[0];
+
 async function loadReference() {
-  const buffer = await renderReference();
+  let buffer;
+  try {
+    buffer = await loadReferenceBuffer(REFERENCE);
+  } catch (err) {
+    // Say it. Do not fall back to the oscillator without saying it — a number
+    // taken against a synthesizer is a number about a synthesizer.
+    console.error(err);
+    setStatus('The call could not be loaded, so there is nothing to imitate yet. Reload, or check your connection.');
+    el('ref-shape').textContent = 'not loaded';
+    return;
+  }
   const samples = await resample(buffer);
   state.reference = { buffer, contour: contour(samples, ANALYSIS_RATE) };
   el('ref-shape').textContent = describeShape(state.reference.contour);
+  el('ref-credit').textContent = `${REFERENCE.label}. ${REFERENCE.note} ${REFERENCE.credit}`;
   redraw();
 }
 
 // ------------------------------------------------------------------ actions
 
 async function playReference() {
+  if (!state.reference) return;
   setStatus('Playing the call…');
   await playSequence([state.reference.buffer]);
   setStatus('Now you try.');
@@ -48,11 +62,11 @@ async function startRecording() {
   }
   el('record').textContent = 'Stop';
   el('record').classList.add('recording');
-  setStatus('Recording. Howl.');
+  setStatus('Recording. Make the call.');
 
   try {
     const blob = await state.recorder.blob;
-    el('record').textContent = 'Record your howl';
+    el('record').textContent = 'Record your call';
     el('record').classList.remove('recording');
     state.recorder = null;
 
@@ -84,7 +98,7 @@ function toggleRecord() {
 }
 
 async function compare() {
-  if (!state.you) return;
+  if (!state.you || !state.reference) return;
   const seq = [state.reference.buffer, state.you.buffer, state.reference.buffer, state.you.buffer];
   const names = ['The call', 'You', 'The call', 'You'];
   setStatus('Listen: call, you, call, you.');
