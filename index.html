@@ -1,30 +1,70 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wild Echo | zvuv.im</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wild Echo — prototype</title>
+<link rel="icon" href="data:,">
+<meta name="description" content="Hear an animal call, make the call yourself, and watch both pitch lines on the same axes.">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="app">
-        <header>
-            <h1 class="logo">Wild Echo</h1>
-            <p class="tagline">Can your voice echo the wild?</p>
-        </header>
+<div id="app">
 
-        <main id="game-core">
-            <div id="display-container">
-                <div id="visualizer-wrapper">
-                    <canvas id="visualizer"></canvas>
-                </div>
-            </div>
+  <header>
+    <h1>Wild Echo</h1>
+    <p class="tagline">Hear the call. Make the call. Watch both lines.</p>
+    <p class="warn" role="note">
+      Prototype. The call you hear is <strong>synthesized</strong> — it is not a
+      wolf. It is here to test whether a human imitation draws a shape.
+    </p>
+  </header>
 
-            <nav class="actions">
-                <button id="record-btn" class="btn-primary">Record Wild Call</button>
-            </nav>
-        </main>
-    </div>
-    <script src="script.js" type="module"></script>
+  <main>
+    <section class="panel" aria-labelledby="traces-h">
+      <h2 id="traces-h">Pitch over time</h2>
+      <canvas id="traces" width="800" height="320"
+              aria-label="Two pitch contours drawn on shared axes: the reference call and your recording."></canvas>
+      <p class="legend">
+        <span class="swatch ref"></span> the call
+        <span class="swatch you"></span> you
+        <span class="hint">A break in a line means no pitch was found there.</span>
+      </p>
+    </section>
+
+    <section class="controls">
+      <button id="play-ref">Hear the call</button>
+      <button id="record">Record your howl</button>
+      <button id="compare" disabled>Call, you, call, you</button>
+      <p id="status" role="status" aria-live="polite">Start by hearing the call.</p>
+    </section>
+
+    <section class="panel described" aria-labelledby="described-h">
+      <h2 id="described-h">The same thing, in words</h2>
+      <p><strong>The call:</strong> <span id="ref-shape">…</span></p>
+      <p><strong>You:</strong> <span id="you-shape">Nothing recorded yet.</span></p>
+      <p class="hint">
+        This is here so the comparison does not depend on seeing the canvas.
+        Every number in it is measured from the audio.
+      </p>
+    </section>
+
+    <section class="panel" aria-labelledby="metrics-h">
+      <h2 id="metrics-h">Was the pitch trackable?</h2>
+      <div id="metrics"><p class="hint">Record something to find out.</p></div>
+      <div class="export-row">
+        <label for="subject">Subject label (no names)</label>
+        <input id="subject" type="text" placeholder="e.g. S07" autocomplete="off">
+        <button id="export" disabled>Save contour</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Zvuvim · <a href="https://zvuv.im/">zvuv.im</a></p>
+  </footer>
+</div>
+<script type="module" src="src/main.js"></script>
 </body>
 </html>

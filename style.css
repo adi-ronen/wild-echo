@@ -1,69 +1,99 @@
 :root {
-    --bg-color: #0a0f0d;
-    --accent-color: #2ecc71;
-    --text-color: #e0e0e0;
+  --bg: #11141b;
+  --panel: #171b24;
+  --line: #262b36;
+  --ink: #e6e9f0;
+  --dim: #8b93a7;
+  --ref: #f0b429;
+  --you: #3aa8c1;
+  --ok: #4ec97e;
+  --no: #e8674f;
 }
+
+* { box-sizing: border-box; }
 
 body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    overflow: hidden;
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-#app {
-    text-align: center;
-    width: 100%;
-    max-width: 600px;
-    padding: 20px;
+#app { max-width: 860px; margin: 0 auto; padding: 28px 20px 48px; }
+
+header h1 { margin: 0; font-size: 30px; letter-spacing: -0.01em; }
+.tagline { margin: 4px 0 14px; color: var(--dim); }
+
+.warn {
+  margin: 0 0 24px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--ref);
+  background: #1d1a12;
+  color: #e8dcc0;
+  font-size: 14px;
 }
 
-.logo {
-    font-size: 3rem;
-    letter-spacing: -2px;
-    color: var(--accent-color);
-    margin-bottom: 0;
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
 }
 
-.tagline {
-    opacity: 0.7;
-    margin-bottom: 3rem;
+.panel h2 { margin: 0 0 12px; font-size: 13px; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--dim); font-weight: 600; }
+
+canvas { width: 100%; height: 320px; display: block; }
+
+.legend { margin: 10px 0 0; font-size: 13px; color: var(--dim); }
+.swatch { display: inline-block; width: 22px; height: 3px; vertical-align: middle;
+  margin: 0 6px 0 14px; border-radius: 2px; }
+.swatch:first-child { margin-left: 0; }
+.swatch.ref { background: var(--ref); }
+.swatch.you { background: var(--you); }
+.hint { color: var(--dim); font-size: 13px; }
+.legend .hint { display: block; margin-top: 6px; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 18px; }
+
+button {
+  background: #212734;
+  color: var(--ink);
+  border: 1px solid #333b4d;
+  border-radius: 8px;
+  padding: 11px 18px;
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { background: #2a3140; }
+button:disabled { opacity: 0.4; cursor: default; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--you); outline-offset: 2px; }
+button.recording { border-color: var(--no); color: var(--no); }
+
+#status { flex-basis: 100%; margin: 4px 0 0; color: var(--dim); font-size: 14px; min-height: 1.5em; }
+
+.described p { margin: 0 0 8px; }
+
+dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; margin: 0 0 12px; }
+dt { color: var(--dim); font-size: 14px; }
+dd { margin: 0; font-variant-numeric: tabular-nums; }
+.thr { color: var(--dim); font-size: 13px; }
+
+.pass { color: var(--ok); font-weight: 600; margin: 0 0 8px; }
+.fail { color: var(--no); font-weight: 600; margin: 0 0 8px; }
+.note { color: var(--dim); font-size: 13px; margin: 0; }
+
+.export-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.export-row label { font-size: 13px; color: var(--dim); }
+input[type="text"] {
+  background: #11141b; color: var(--ink); border: 1px solid #333b4d;
+  border-radius: 8px; padding: 9px 12px; font: inherit; font-size: 14px; width: 130px;
 }
 
-#visualizer-wrapper {
-    width: 100%;
-    height: 200px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+footer { margin-top: 32px; color: var(--dim); font-size: 13px; }
+footer a { color: var(--you); }
 
-canvas {
-    width: 100%;
-    height: 100%;
-}
-
-.btn-primary {
-    background: transparent;
-    border: 2px solid var(--accent-color);
-    color: var(--accent-color);
-    padding: 15px 40px;
-    font-size: 1.2rem;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-    background: var(--accent-color);
-    color: var(--bg-color);
-    box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);
-}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

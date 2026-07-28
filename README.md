@@ -1,0 +1,128 @@
+# Wild Echo
+
+Hear an animal call. Make the call yourself. Watch both pitch lines on the same
+axes, hear them played back one after the other, and go again.
+
+Live at **https://zvuv.im/wild-echo/**
+
+---
+
+## What this is
+
+A prototype, and it is honest about being one. It exists to answer one question
+before anything gets built on top of it:
+
+> When an untrained person imitates an animal call, on ordinary consumer
+> hardware in an ordinary room, does their pitch produce a legible **shape**, or
+> does it produce noise?
+
+If it is noise, the whole route is wrong and we want to know this week.
+
+## What it does not do
+
+**It does not guess which animal you were imitating, and it never will.**
+
+The original route was: person imitates an animal, the site recognises which
+animal, scores the accuracy. That route was killed on physics, not on taste.
+Human and animal vocal tracts differ in length, formant structure, F0 range and
+noise profile — a human wolf howl and a human coyote howl sit *closer to each
+other* than either sits to a real wolf. A nearest-neighbour lookup over that
+would be matching mostly on "is this a human being loud."
+
+A version of it was buildable (YAMNet embeddings, k-NN over recorded human
+examples, roughly 60–75% top-1 with a cooperative adult and worse with a
+six-year-old, who is the actual user). It was declined anyway. It is a judgment
+machine: one confident wrong answer and a kid learns the site is broken, and
+even when it is right it aims the person at the scorer instead of at the animal.
+
+So the machine never guesses. There is no wrong answer to lose trust over, and
+the only measurement on screen is one that can be said out loud in a sentence:
+*we compared how your pitch moved to how the call's pitch moved.*
+
+## What is measured, and what is not
+
+Everything the interface reports is measured from the audio:
+
+- **Coverage** — voiced frames divided by frames between your first and last
+  voiced frame.
+- **Longest interior gap** — the longest stretch inside that span where no pitch
+  was found, in milliseconds.
+- **Shape description** — duration, range in hertz and octaves, net direction,
+  number of direction changes on a smoothed curve.
+
+There is **no accuracy score**, designed or otherwise. If one is ever added it
+will be labelled as designed, in the interface, where a user reads it.
+
+## Running it
+
+Static files, no build step, no dependencies. Any static server:
+
+```sh
+python3 -m http.server 8000   # then open http://localhost:8000
+```
+
+A microphone needs a secure context — `localhost` or HTTPS. Opening
+`index.html` from the filesystem will not work, because ES modules and
+`getUserMedia` both refuse `file://`.
+
+## Checks
+
+```sh
+node scripts/test-pitch.mjs      # pitch tracker against signals of known f0
+node scripts/check-manifest.mjs  # provenance gate
+```
+
+Both run in CI on every pull request.
+
+## Your voice stays here
+
+There is no upload path in this codebase. Recording happens in the browser,
+analysis happens in the browser, and the export button writes pitch contours and
+metrics — never audio. `.gitignore` blocks recordings from entering the
+repository at all. See `ASSETS.md`.
+
+## Accessibility
+
+Decided now, while it is still cheap:
+
+- The whole thing works **without a microphone** — hear the call, see its trace.
+- Every comparison is available as **playback** (call, you, call, you) and as
+  **words**, not only as a line on a canvas. The visual is never the only
+  channel.
+- Pitch is drawn on a **log-frequency** axis, so 200→400 Hz looks like 400→800,
+  which is how pitch is actually heard.
+- A gap in a line is a real break, never an interpolated guess. The trace does
+  not invent data to look smoother.
+
+## What is tape, right now
+
+- **The reference call is synthesized.** It is not a wolf. It is here so the
+  prototype runs today without shipping audio whose licence has not been
+  verified. It is enough to test the tracker; it is *not* enough to run
+  kill-line #1, because a person imitating a synthesizer is imitating a
+  synthesizer.
+- **No real animal audio exists yet.** The animal list will be shaped by what is
+  licensed, not by what would be nice.
+- **Time alignment is naive** — both traces start at their first voiced frame.
+  Good enough to see a shape, wrong for anything that depends on rhythm.
+- **The tracker has only been tested against synthetic signals.** Breathy
+  onsets, creak, room reverb, phone speaker bleeding into phone mic, and
+  six-year-olds are all untested. Only real recordings answer those.
+
+## Layout
+
+```
+index.html            the page
+style.css
+src/pitch.js          YIN f0 estimation + traceability metrics + shape description
+src/audio.js          capture, decode, downsample, playback
+src/draw.js           two contours on shared log-frequency axes
+src/reference.js      the synthesized placeholder call (labelled as such)
+src/main.js           wiring
+assets/manifest.json  provenance rows — the gate reads this
+scripts/              the gate and the pitch tests
+```
+
+---
+
+Zvuvim · [zvuv.im](https://zvuv.im/)

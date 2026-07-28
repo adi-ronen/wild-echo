@@ -1,0 +1,19 @@
+# Subject recordings never enter this repository.
+# They are another person's voice. They stay on the machine that recorded them.
+recordings/
+sessions/
+
+# Loose audio anywhere in the tree is assumed to be a recording, not an asset.
+# Licensed assets live in assets/audio/ and are unignored below — that way the
+# only place audio can enter the repo is the one place the manifest looks.
+*.webm
+*.wav
+*.m4a
+*.mp3
+*.ogg
+*.flac
+*.aac
+!assets/audio/**
+
+node_modules/
+.DS_Store
