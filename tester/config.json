@@ -1,0 +1,8 @@
+{
+  "schema": "wild-echo/tester-config/1",
+  "note": "consentApproved is the interlock on this page. It stays false until Adi has approved the consent wording that ships in tester/index.html. While it is false the page will not record anything, and says why. Flipping it to true is a one-line change and is Adi's call, not Tal's.",
+  "consentApproved": false,
+  "consentVersion": "draft-2026-07-28",
+  "deleteBy": "2026-09-13",
+  "maxRecordSeconds": 8
+}

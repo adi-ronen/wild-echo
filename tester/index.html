@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wild Echo — tester session</title>
+<link rel="icon" href="data:,">
+<meta name="robots" content="noindex">
+<meta name="description" content="A one-take recording session for people helping test Wild Echo.">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="tester.css">
+</head>
+<body>
+<div id="app">
+
+  <header>
+    <h1>Wild Echo — tester session</h1>
+    <p class="tagline">Ten minutes, one recording, no account, nothing uploaded.</p>
+  </header>
+
+  <main>
+
+    <!-- ------------------------------------------------------ not approved -->
+    <section class="panel blocked" id="screen-blocked" hidden>
+      <h2>This page is not open yet</h2>
+      <p>
+        The consent wording below has not been approved yet, so recording is
+        switched off. This is deliberate: nobody records a stranger's voice on
+        a form of words that has not been signed off.
+      </p>
+      <p class="hint">
+        If you were sent this link and are seeing this, tell the person who
+        sent it — they will know what it means.
+      </p>
+    </section>
+
+    <!-- ------------------------------------------------------------ consent -->
+    <section class="panel" id="screen-consent">
+      <h2>Before you start — what happens to your voice</h2>
+
+      <div class="consent" id="consent-text">
+        <p class="draft-mark" id="draft-mark" hidden>
+          DRAFT WORDING — not approved for use with testers yet.
+        </p>
+
+        <h3>1. What you will do</h3>
+        <p>
+          You will hear a recording of an animal call, then record yourself
+          imitating it, using your own phone or computer. One take. It takes
+          about five minutes.
+        </p>
+
+        <h3>2. Your recording stays on your device</h3>
+        <p>
+          The recording of your voice is made in your browser and never leaves
+          your device. This page has nowhere to send it: it is a plain static
+          page with no server behind it and no upload in its code. When you
+          close the tab, the recording is gone.
+        </p>
+
+        <h3>3. What does leave, and only if you send it</h3>
+        <p>
+          At the end, the page offers you a small text file to save. You choose
+          whether to send that file back. Nothing is sent automatically. The
+          file contains:
+        </p>
+        <ul>
+          <li>a list of numbers describing how the <strong>pitch</strong> of your
+              voice moved over time, ten times a second;</li>
+          <li>how <strong>loud</strong> it was over time, on the same clock;</li>
+          <li>how long the recording was, and how much of it had a trackable
+              pitch;</li>
+          <li>the make of your browser and operating system (for example
+              "Chrome on Android") — so a bad result can be told apart from a
+              bad microphone;</li>
+          <li>the tester code from your link, the date, and any of the boxes you
+              tick about how it went.</li>
+        </ul>
+        <p>
+          It does <strong>not</strong> contain audio, your name, your email, your
+          phone number, your location, or anything you type freely. There is no
+          box in this page to type anything except the tester code.
+        </p>
+        <p class="hint">
+          Plainly, on the pitch line: it is a drawing of how high or low your
+          voice went. It cannot be turned back into sound, it does not contain
+          any words you said, and it is not a voiceprint — the things that make
+          a voice recognisable as yours are not in it.
+        </p>
+
+        <h3>4. Who sees it</h3>
+        <p>
+          The people building Wild Echo. One further person — an outside judge —
+          will be shown the pitch drawings on their own, with no tester code and
+          no way to know whose they are; their job is to say which animal call
+          each drawing looks like.
+        </p>
+
+        <h3>5. Where it is kept, and for how long</h3>
+        <p>
+          On the computer of the person running the test. Not published, not
+          posted anywhere, not sold, not given to anyone else, and not used to
+          train any model. It is kept until the decision this test exists for,
+          on <strong>14 August 2026</strong>, and deleted within 30 days after
+          that — by <strong>13 September 2026</strong>. If that decision date
+          moves, the deletion date moves with it and you will be told.
+        </p>
+
+        <h3>6. Changing your mind</h3>
+        <p>
+          Reply to whoever sent you this link, quote your tester code, and ask
+          for your file to be deleted. No reason needed, and it will be done
+          within seven days. You can do this any time before the deletion date
+          above. One honest limit: if a total has already been reported — "24 of
+          30 recordings passed" — your file is still deleted, but that already
+          published total is not recalculated.
+        </p>
+
+        <h3>7. It is voluntary</h3>
+        <p>
+          You can stop at any point, for any reason, by closing the tab. Nothing
+          is kept and nobody is told. You do not have to send the file at the
+          end even after recording.
+        </p>
+
+        <h3>8. Who this is for</h3>
+        <p>
+          Adults, 18 or over. Children are not part of this test.
+        </p>
+
+        <h3>9. About your link</h3>
+        <p>
+          The code in your link is a <strong>label, not a lock</strong>. It
+          exists so ten people's results can be told apart without using
+          anybody's name. Anyone who has the link can open this page, and the
+          page cannot tell who is holding it. It is said plainly here rather
+          than dressed up as security.
+        </p>
+
+        <h3>10. Questions</h3>
+        <p>
+          Ask the person who sent you the link. They can reach the people who
+          built this.
+        </p>
+
+        <p class="hint" id="consent-version">Consent wording version: …</p>
+      </div>
+
+      <div class="agree">
+        <label><input type="checkbox" id="agree-read"> I have read this and I agree to it.</label>
+        <label><input type="checkbox" id="agree-age"> I am 18 or older.</label>
+        <p>
+          <label for="tester-code">Your tester code</label>
+          <input id="tester-code" type="text" inputmode="latin" autocomplete="off"
+                 placeholder="e.g. T04" maxlength="12">
+          <span class="hint">Filled in from your link if it had one. No names.</span>
+        </p>
+        <button id="start" disabled>Start</button>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------ session -->
+    <section id="screen-session" hidden>
+
+      <section class="panel">
+        <h2 id="step-title">Step 1 of 2 — hear the call</h2>
+        <p id="call-note">…</p>
+        <div class="controls">
+          <button id="play-ref">Hear the call</button>
+          <button id="record" disabled>Record my one take</button>
+        </div>
+        <p id="status" role="status" aria-live="polite">Hear the call first — as many times as you like.</p>
+        <p class="hint">
+          One take is the whole point: the test is about what an ordinary first
+          try looks like, so there is no retry button and nothing is thrown
+          away — including a take that goes badly.
+        </p>
+      </section>
+
+      <section class="panel" id="result" hidden>
+        <h2>Your line and the call's line</h2>
+        <canvas id="traces" width="800" height="320"
+                aria-label="Two pitch contours on shared axes: the call, and your recording."></canvas>
+        <p class="legend">
+          <span class="swatch ref"></span> the call
+          <span class="swatch you"></span> you
+          <span class="hint">A break in a line means no pitch was found there.</span>
+        </p>
+        <p><strong>The call:</strong> <span id="ref-shape">…</span></p>
+        <p><strong>You:</strong> <span id="you-shape">…</span></p>
+        <div class="controls">
+          <button id="compare">Play: call, you, call, you</button>
+        </div>
+
+        <h3>How did it go?</h3>
+        <p class="hint">Tick anything that applies. Nothing here is a judgement of your imitation.</p>
+        <div id="flags">
+          <label><input type="checkbox" value="interrupted"> Someone or something interrupted me</label>
+          <label><input type="checkbox" value="stopped-early"> I stopped early or lost my nerve</label>
+          <label><input type="checkbox" value="device-trouble"> The microphone or the page misbehaved</label>
+          <label><input type="checkbox" value="noisy-room"> The room was noisy</label>
+        </div>
+
+        <div class="controls">
+          <button id="finish">Save my results file</button>
+          <button id="copy" class="secondary">Copy results as text instead</button>
+        </div>
+        <p id="finish-status" role="status" aria-live="polite"></p>
+        <p class="hint">
+          Send that file back to whoever sent you the link. It contains no audio.
+          You can open it in any text editor and read every number in it first.
+        </p>
+      </section>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Zvuvim · <a href="https://zvuv.im/">zvuv.im</a> · <a href="../">the prototype itself</a></p>
+  </footer>
+</div>
+<script type="module" src="tester.js"></script>
+</body>
+</html>

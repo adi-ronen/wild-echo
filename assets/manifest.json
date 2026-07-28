@@ -3,6 +3,21 @@
   "note": "Every shipped asset and every stated fact gets a row here. Missing field or expired recheck date fails the build. The gate is provenance, not truth: it enforces that a claim has a named source that supports it, not that the claim is correct. Truth is the Research Lead's craft.",
   "assets": [
     {
+      "id": "black-throated-loon-XC803905",
+      "kind": "audio",
+      "path": "assets/audio/black-throated-loon-XC803905-clip.wav",
+      "description": "One call of a black-throated loon (Gavia arctica), trimmed from XC803905 (0.90 s, from 14.05 s to 14.95 s of the source), mixed to mono, resampled to 22050 Hz, peak-normalised to -1 dBFS, 20 ms fades at both ends. No other processing.",
+      "source": "https://xeno-canto.org/803905",
+      "sourceDetail": "Recorded 2023-05-19 at Leksand Municipality, Dalarnas län, Sweden, by Grégoire Chauvot. Quality A, song, male, field recording, no playback used. Source download is a 122.4 s 48 kHz stereo WAV, sha1 74804ef4ce7e408d7e1c7eca5135e32d1f915ff4. This clip: sha1 1bd7e94ac2174da5aa643c420a50d6c118986c6b.",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attribution": "Grégoire Chauvot, XC803905, xeno-canto.org/803905. CC0 1.0 waives the attribution requirement; we credit anyway.",
+      "verificationNote": "Licence read off the recording's own page at xeno-canto.org/803905 on 2026-07-28: 'License: Creative Commons Public Domain Dedication 1.0', linking creativecommons.org/publicdomain/zero/1.0/. Verified per file, not per site — xeno-canto licences vary per recording.",
+      "verified": "2026-07-28",
+      "recheck": "2027-01-28",
+      "synthesized": false
+    },
+    {
       "id": "placeholder-howl",
       "kind": "audio",
       "path": "src/reference.js",
