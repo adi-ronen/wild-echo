@@ -20,12 +20,42 @@ const state = {
 
 // ---------------------------------------------------------------- reference
 
-const REFERENCE = REFERENCES[0];
+// Which of the three calls is loaded right now. Changing it throws away the
+// take that was compared against the old one — a contour drawn against a
+// different call is not evidence about this one.
+let current = REFERENCES[0];
+
+function fillCallPicker() {
+  const sel = el('call');
+  sel.innerHTML = '';
+  for (const ref of REFERENCES) {
+    const opt = document.createElement('option');
+    opt.value = ref.id;
+    opt.textContent = `${ref.animal} — ${ref.shape}`;
+    sel.appendChild(opt);
+  }
+  sel.value = current.id;
+}
+
+function changeCall() {
+  const next = REFERENCES.find((r) => r.id === el('call').value);
+  if (!next || next.id === current.id) return;
+  current = next;
+  state.reference = null;
+  state.you = null;
+  state.attempt = 0;
+  el('you-shape').textContent = 'Nothing recorded yet.';
+  el('metrics').innerHTML = '<p class="hint">Record something to find out.</p>';
+  el('compare').disabled = true;
+  el('export').disabled = true;
+  redraw();
+  loadReference();
+}
 
 async function loadReference() {
   let buffer;
   try {
-    buffer = await loadReferenceBuffer(REFERENCE);
+    buffer = await loadReferenceBuffer(current);
   } catch (err) {
     // Say it. Do not fall back to the oscillator without saying it — a number
     // taken against a synthesizer is a number about a synthesizer.
@@ -37,7 +67,7 @@ async function loadReference() {
   const samples = await resample(buffer);
   state.reference = { buffer, contour: contour(samples, ANALYSIS_RATE) };
   el('ref-shape').textContent = describeShape(state.reference.contour);
-  el('ref-credit').textContent = `${REFERENCE.label}. ${REFERENCE.note} ${REFERENCE.credit}`;
+  el('ref-credit').textContent = `${current.label}. ${current.note} ${current.credit}`;
   redraw();
 }
 
@@ -148,7 +178,7 @@ function exportSession() {
     schema: 'wild-echo/session/1',
     recordedAt: new Date().toISOString(),
     subject: el('subject').value.trim() || 'unlabelled',
-    reference: { id: REFERENCE.id, synthesized: REFERENCE.synthesized, label: REFERENCE.label },
+    reference: { id: current.id, synthesized: current.synthesized, label: current.label },
     attempt: state.attempt,
     analysisRate: ANALYSIS_RATE,
     killLine1A: KILL_LINE_1A,
@@ -158,7 +188,7 @@ function exportSession() {
       f.f0 === null ? null : +f.f0.toFixed(1),
     ]),
   };
-  const name = `wild-echo-${payload.subject}-${state.attempt}.json`;
+  const name = `wild-echo-${payload.subject}-${current.id}-${state.attempt}.json`;
   const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
   const a = document.createElement('a');
   a.href = url; a.download = name; a.click();
@@ -168,10 +198,12 @@ function exportSession() {
 
 // --------------------------------------------------------------------- wire
 
+el('call').addEventListener('change', changeCall);
 el('play-ref').addEventListener('click', playReference);
 el('record').addEventListener('click', toggleRecord);
 el('compare').addEventListener('click', compare);
 el('export').addEventListener('click', exportSession);
 window.addEventListener('resize', redraw);
 
+fillCallPicker();
 loadReference();

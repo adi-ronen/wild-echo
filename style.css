@@ -72,6 +72,13 @@ button:disabled { opacity: 0.4; cursor: default; }
 button:focus-visible, input:focus-visible { outline: 2px solid var(--you); outline-offset: 2px; }
 button.recording { border-color: var(--no); color: var(--no); }
 
+.call-pick { font-size: 13px; color: var(--dim); }
+select {
+  background: #212734; color: var(--ink); border: 1px solid #333b4d;
+  border-radius: 8px; padding: 11px 12px; font: inherit; font-size: 15px; max-width: 100%;
+}
+select:focus-visible { outline: 2px solid var(--you); outline-offset: 2px; }
+
 #status { flex-basis: 100%; margin: 4px 0 0; color: var(--dim); font-size: 14px; min-height: 1.5em; }
 
 .described p { margin: 0 0 8px; }
