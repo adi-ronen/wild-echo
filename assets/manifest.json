@@ -18,6 +18,36 @@
       "synthesized": false
     },
     {
+      "id": "whooper-swan-XC803772",
+      "kind": "audio",
+      "path": "assets/audio/whooper-swan-XC803772-clip.wav",
+      "description": "One flight-call note of a whooper swan (Cygnus cygnus), trimmed from XC803772 (0.80 s, from 36.64 s to 37.44 s of the source), mixed to mono, resampled to 22050 Hz, peak-normalised to -1 dBFS, 20 ms fades at both ends. No other processing. The source note is quiet: normalising it applied about 32 dB of gain, which lifts the recording's own noise floor with it.",
+      "source": "https://xeno-canto.org/803772",
+      "sourceDetail": "Recorded 2023-05-12 at Kvaløyvågen, Tromsø, Troms og Finnmark, Norway, by Grégoire Chauvot. Quality A, flight call, male, field recording, no playback used, no background species listed. Source download is a 66.9 s 48 kHz 24-bit stereo WAV, sha1 7b8b1323f7c7feb14de659c6b756116317a0a849. This clip: sha1 6984bda8f86c82b37de177e89a113af227d5556a.",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attribution": "Grégoire Chauvot, XC803772, xeno-canto.org/803772. CC0 1.0 waives the attribution requirement; we credit anyway.",
+      "verificationNote": "Licence read off the recording's own page at xeno-canto.org/803772 on 2026-07-29: 'License: Creative Commons Public Domain Dedication 1.0', linking creativecommons.org/publicdomain/zero/1.0/. Verified per file, not per site. The species identification is the recordist's, not ours: this gate covers the licence, not the identification.",
+      "verified": "2026-07-29",
+      "recheck": "2027-01-29",
+      "synthesized": false
+    },
+    {
+      "id": "common-wood-pigeon-XC1107845",
+      "kind": "audio",
+      "path": "assets/audio/common-wood-pigeon-XC1107845-clip.wav",
+      "description": "One coo syllable of a common wood pigeon (Columba palumbus), trimmed from XC1107845 (0.99 s, from 7.12 s to 8.11 s of the source), mixed to mono, resampled to 22050 Hz, peak-normalised to -1 dBFS, 20 ms fades at both ends. No other processing. The source is a 24 kHz 85 kbps mp3 — lossy, and the only format the recordist published.",
+      "source": "https://xeno-canto.org/1107845",
+      "sourceDetail": "Recorded 2026-03-27 at Courtils, Manche, Normandy, France, by Sonothèque ADVL. Song, adult male, field recording, no playback used, no background species listed. Source download is a 12.0 s 24 kHz stereo mp3, sha1 1e6f10df68b020cb0e9db589408a5cc6c12aeaa0. This clip: sha1 fb939ef87afe412d5f4f1a6c0e75a22afeaed242.",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attribution": "Sonothèque ADVL, XC1107845, xeno-canto.org/1107845. CC0 1.0 waives the attribution requirement; we credit anyway.",
+      "verificationNote": "Licence read off the recording's own page at xeno-canto.org/1107845 on 2026-07-29: 'License: Creative Commons Public Domain Dedication 1.0', linking creativecommons.org/publicdomain/zero/1.0/. Verified per file, not per site. The species identification is the recordist's, not ours: this gate covers the licence, not the identification.",
+      "verified": "2026-07-29",
+      "recheck": "2027-01-29",
+      "synthesized": false
+    },
+    {
       "id": "placeholder-howl",
       "kind": "audio",
       "path": "src/reference.js",

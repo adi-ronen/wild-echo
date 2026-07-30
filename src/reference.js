@@ -1,8 +1,14 @@
 // The reference calls a person imitates.
 //
-// As of 2026-07-28 the first one is REAL: a black-throated loon recorded in
-// Sweden, released by its recordist under CC0, verified per file at the source
-// and not per site — see assets/manifest.json and ASSETS.md.
+// As of 2026-07-29 there are three, all REAL and all CC0, each licence read off
+// that recording's own page at the source — per file, never per site. See
+// assets/manifest.json and ASSETS.md.
+//
+// They are ordered by shape on purpose: a line that goes up, a line that stays
+// flat, a line that drops at the end. Kill-line #1B asks an outside grader to
+// match unlabelled contours against these three, so three references that all
+// drew the same shape would be testing the grader's patience rather than the
+// route.
 //
 // The synthesized howl that stood here before is kept below as a fallback, and
 // only as a fallback: if the audio file fails to load, the app says so in the
@@ -23,6 +29,32 @@ export const REFERENCES = [
     // What the recording is, said plainly, so nobody has to infer it from a
     // filename: one call trimmed out of a longer bout on a lake at night.
     note: 'One call, trimmed from a longer recording made on a Swedish lake in May.',
+    // Measured from the shipped clip by src/pitch.js, not asserted by hand.
+    shape: 'rises about an octave in one smooth bend',
+  },
+  {
+    id: 'whooper-swan-XC803772',
+    kind: 'file',
+    url: new URL('../assets/audio/whooper-swan-XC803772-clip.wav', import.meta.url).href,
+    animal: 'Whooper swan',
+    species: 'Cygnus cygnus',
+    label: 'Whooper swan (Cygnus cygnus) — real recording',
+    synthesized: false,
+    credit: 'Grégoire Chauvot, XC803772, xeno-canto.org/803772, CC0 1.0',
+    note: 'One note of a flight call, trimmed from a longer recording made in northern Norway in May.',
+    shape: 'holds one note nearly flat',
+  },
+  {
+    id: 'common-wood-pigeon-XC1107845',
+    kind: 'file',
+    url: new URL('../assets/audio/common-wood-pigeon-XC1107845-clip.wav', import.meta.url).href,
+    animal: 'Common wood pigeon',
+    species: 'Columba palumbus',
+    label: 'Common wood pigeon (Columba palumbus) — real recording',
+    synthesized: false,
+    credit: 'Sonothèque ADVL, XC1107845, xeno-canto.org/1107845, CC0 1.0',
+    note: 'One coo, trimmed from a longer song recorded in Normandy at dawn in March.',
+    shape: 'holds, then drops most of an octave at the end',
   },
 ];
 

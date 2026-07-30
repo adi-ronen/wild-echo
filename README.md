@@ -65,12 +65,21 @@ A microphone needs a secure context — `localhost` or HTTPS. Opening
 `index.html` from the filesystem will not work, because ES modules and
 `getUserMedia` both refuse `file://`.
 
-## The reference call
+## The reference calls
 
-One call of a **black-throated loon** (*Gavia arctica*), trimmed from
-[XC803905](https://xeno-canto.org/803905) — recorded in Sweden by Grégoire
-Chauvot and released under **CC0 1.0**, verified per file on the recording's own
-page. `ASSETS.md` records what was checked, what was rejected, and why.
+Three, all real animals, all **CC0 1.0**, each licence read off that recording's
+own page — per file, never per site. `ASSETS.md` records what was checked, what
+was rejected, and why.
+
+| Call | Source | Recordist | Shape the tracker reads |
+|---|---|---|---|
+| Black-throated loon (*Gavia arctica*) | [XC803905](https://xeno-canto.org/803905) | Grégoire Chauvot | rises about an octave in one smooth bend |
+| Whooper swan (*Cygnus cygnus*) | [XC803772](https://xeno-canto.org/803772) | Grégoire Chauvot | holds one note nearly flat |
+| Common wood pigeon (*Columba palumbus*) | [XC1107845](https://xeno-canto.org/1107845) | Sonothèque ADVL | holds, then drops most of an octave at the end |
+
+Up, flat, down — chosen that way on purpose. Kill-line #1B asks an outside
+grader to match unlabelled contours against these three, and three references
+that all drew the same shape would be measuring the grader, not the route.
 
 ## The tester session page
 
@@ -105,6 +114,21 @@ node scripts/check-no-upload.mjs  # privacy gate     — nothing can send anythi
 
 All three run in CI on every pull request.
 
+There is a fourth check that does not run in CI, because it needs a real
+browser:
+
+```sh
+npm install playwright                       # once; not a repo dependency
+node scripts/drive.mjs                       # main page, every call
+node scripts/drive.mjs --tester              # tester page, interlock on
+node scripts/drive.mjs --tester --approved   # tester page as if approved
+```
+
+`--approved` intercepts the request for `tester/config.json` and answers with
+`consentApproved: true`. It does not edit the file — that flag stays Adi's.
+This script has caught two bugs the unit tests could not, which is why it is in
+the repository now instead of somebody's `/tmp`.
+
 ## Your voice stays here
 
 There is no upload path in this codebase. Recording happens in the browser,
@@ -132,10 +156,14 @@ Decided now, while it is still cheap:
 
 ## What is tape, right now
 
-- **One animal, not three.** The reference call is a real, CC0, licence-verified
-  black-throated loon (XC803905). Kill-line #1 asks for three calls; two of them
-  do not exist yet, and the animal list is shaped by what is licensed, not by
-  what would be nice.
+- **The tester page still runs one call, not three.** The main page can now play
+  any of the three; `tester/` is still fixed to the first one. Making a session
+  three calls changes what the consent text describes, and that text is with Adi
+  — so it waits for that decision rather than going around it.
+- **Two of the three calls are birds you would not name in a game about
+  animals.** A swan flight call and a wood pigeon coo are what carried a
+  verified CC0 licence *and* a legible contour. The animal list is shaped by
+  what is licensed, not by what would be nice.
 - **The tester page has never met a tester.** It has been driven end to end in a
   real browser with a fake microphone, which is not the same thing as ten adults
   on ten kitchen tables.
@@ -156,12 +184,12 @@ style.css
 src/pitch.js          YIN f0 estimation + traceability metrics + shape description
 src/audio.js          capture, decode, downsample, playback
 src/draw.js           two contours on shared log-frequency axes
-src/reference.js      the real reference call, and the synth fallback
+src/reference.js      the three real reference calls, and the synth fallback
 src/main.js           wiring
 assets/audio/         licensed audio — the only place audio may enter the repo
 assets/manifest.json  provenance rows — the gate reads this
 tester/               the one-take session page for kill-line #1 subjects
-scripts/              the gates and the pitch tests
+scripts/              the gates, the pitch tests, and the browser drive
 ```
 
 ---
