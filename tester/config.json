@@ -1,8 +1,8 @@
 {
   "schema": "wild-echo/tester-config/1",
-  "note": "consentApproved is the interlock on this page. It stays false until Adi has approved the consent wording that ships in tester/index.html. While it is false the page will not record anything, and says why. Flipping it to true is a one-line change and is Adi's call, not Tal's.",
-  "consentApproved": false,
-  "consentVersion": "draft-2026-07-28",
+  "note": "consentApproved is the interlock on this page. While it is false the page will not record anything, and says why. It is still not Tal's flag to flip on its own: the approval event is Adi's merge of the pull request that carries this file, which is why the flip sits in that same pull request rather than being made afterwards. Nobody records a stranger's voice on a form of words that has not been signed off.",
+  "consentApproved": true,
+  "consentVersion": "2026-08-01",
   "deleteBy": "2026-09-13",
   "maxRecordSeconds": 8
 }

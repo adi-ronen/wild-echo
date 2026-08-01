@@ -84,13 +84,14 @@ that all drew the same shape would be measuring the grader, not the route.
 ## The tester session page
 
 `tester/` — served at `zvuv.im/wild-echo/tester/`. This is what a person gets at
-the end of a link when they help run kill-line #1: consent, hear the call, one
-take, and a small file of numbers they choose to send back.
+the end of a link when they help run kill-line #1: consent, then three calls in
+turn — hear it, imitate it once — and one small file of numbers they choose to
+send back at the end.
 
 Three things about it are worth reading before judging the design:
 
-- **One take, nothing discarded.** No retry button. A take that goes badly is a
-  result, and it is counted.
+- **One take per call, nothing discarded.** Three calls, three recordings, no
+  retry button. A take that goes badly is a result, and it is counted.
 - **Nothing is uploaded, because there is nowhere to upload to.** GitHub Pages
   is static. The results come back as a file the tester saves and sends. That is
   a real weakness — it depends on a person — and it beats putting a stranger's
@@ -100,9 +101,19 @@ Three things about it are worth reading before judging the design:
   outright that anyone holding the link can open it, and the code exists so ten
   people's results can be told apart without using anybody's name.
 
-Recording is switched **off** until `tester/config.json` has
-`"consentApproved": true`. That flag is Adi's to flip, not Tal's — the consent
-wording it gates is a promise made to another person.
+Recording is switched off unless `tester/config.json` has
+`"consentApproved": true`. That flag is not Tal's to set alone — the consent
+wording it gates is a promise made to another person. It went true on
+2026-08-01, in the same pull request that shipped the wording Adi approved,
+because the approval event is Adi's merge of that pull request. If the wording
+ever changes again, the flag goes back to false in the change that alters it.
+
+The prompt on the record screen — *make the sound once, do not make it twice* —
+is not decoration. Condition A fails a take on an interior unvoiced gap over
+250 ms, and a person who imitates, pauses, and imitates again produces exactly
+that gap without their voice ever being untrackable. See `CORPUS-PROBE.md`. The
+wood pigeon carries one extra sentence for the same reason: a real one coos in
+a series and the reference is a single coo.
 
 ## Checks
 
@@ -120,12 +131,14 @@ browser:
 ```sh
 npm install playwright                       # once; not a repo dependency
 node scripts/drive.mjs                       # main page, every call
-node scripts/drive.mjs --tester              # tester page, interlock on
-node scripts/drive.mjs --tester --approved   # tester page as if approved
+node scripts/drive.mjs --tester              # tester page, config as shipped
+node scripts/drive.mjs --tester --approved   # tester page, forced approved
 ```
 
 `--approved` intercepts the request for `tester/config.json` and answers with
-`consentApproved: true`. It does not edit the file — that flag stays Adi's.
+`consentApproved: true`. It never edits the file. Since the shipped flag is now
+true it is a no-op on `main`; it stays because the interlock can go back to
+false and the recording path has to remain drivable when it does.
 This script has caught two bugs the unit tests could not, which is why it is in
 the repository now instead of somebody's `/tmp`.
 
@@ -156,10 +169,15 @@ Decided now, while it is still cheap:
 
 ## What is tape, right now
 
-- **The tester page still runs one call, not three.** The main page can now play
-  any of the three; `tester/` is still fixed to the first one. Making a session
-  three calls changes what the consent text describes, and that text is with Adi
-  — so it waits for that decision rather than going around it.
+- **The three calls come in the same order for everybody** — up, flat, down, in
+  `REFERENCES` order. Nothing is counterbalanced, so any order effect is shared
+  across all thirty recordings instead of being measured. The bet does not ask
+  for counterbalancing, and thirty recordings could not detect it if it did.
+  Written down rather than discovered later.
+- **The prompt is a sentence, and a sentence is not an enforcement.** Nothing in
+  the page can stop someone imitating the call twice; the burst count in the
+  results file records when they did. That number is a diagnostic and it never
+  changes a pass or a fail.
 - **Two of the three calls are birds you would not name in a game about
   animals.** A swan flight call and a wood pigeon coo are what carried a
   verified CC0 licence *and* a legible contour. The animal list is shaped by
@@ -188,7 +206,7 @@ src/reference.js      the three real reference calls, and the synth fallback
 src/main.js           wiring
 assets/audio/         licensed audio — the only place audio may enter the repo
 assets/manifest.json  provenance rows — the gate reads this
-tester/               the one-take session page for kill-line #1 subjects
+tester/               the three-call, one-take-each session page for kill-line #1
 scripts/              the gates, the pitch tests, and the browser drive
 ```
 

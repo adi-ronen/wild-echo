@@ -55,6 +55,12 @@ export const REFERENCES = [
     credit: 'Sonothèque ADVL, XC1107845, xeno-canto.org/1107845, CC0 1.0',
     note: 'One coo, trimmed from a longer song recorded in Normandy at dawn in March.',
     shape: 'holds, then drops most of an octave at the end',
+    // Shown to testers on this call's screen only. A real wood pigeon coos in a
+    // series and this clip is one coo out of that series. The corpus probe found
+    // people imitating a pigeon produced a median of six separate bursts and 0
+    // of 19 cleared condition A, so the mismatch is named out loud on the screen
+    // rather than hoped away. It is a sentence, not a second reference.
+    testerNote: 'A real wood pigeon coos over and over. This clip is one single coo. Copy this one coo, not the whole series.',
   },
 ];
 
