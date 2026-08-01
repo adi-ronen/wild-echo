@@ -25,6 +25,22 @@
 .blocked { border-color: var(--no); }
 .blocked h2 { color: var(--no); }
 
+/* The instruction that has to land before the microphone opens. It is given
+   its own weight on the screen because a sentence people skim is a sentence
+   that did not happen — the whole defect this wording exists to fix is people
+   making the sound more than once. */
+.prompt {
+  margin: 16px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--you);
+  background: #16191c;
+}
+.prompt h3 { margin: 0 0 6px; font-size: 16px; color: var(--ink); }
+.prompt p { margin: 0; font-size: 15px; line-height: 1.7; }
+
+/* One call needs a sentence the other two do not. It gets its own line. */
+.call-warning { display: block; margin-top: 8px; color: var(--ink); }
+
 .agree {
   margin-top: 20px;
   padding-top: 16px;

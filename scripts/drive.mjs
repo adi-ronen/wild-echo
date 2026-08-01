@@ -6,13 +6,14 @@
 //
 //   npm install playwright        # once, outside this repo if you prefer
 //   node scripts/drive.mjs                       # main page, all three calls
-//   node scripts/drive.mjs --tester              # tester page, interlock on
-//   node scripts/drive.mjs --tester --approved   # tester page as if approved
+//   node scripts/drive.mjs --tester              # tester page, config as shipped
+//   node scripts/drive.mjs --tester --approved   # tester page, forced approved
 //
-// --approved does NOT edit tester/config.json. It intercepts the request for
-// that file and answers with consentApproved:true, so the approved path can be
-// driven without anybody flipping the interlock in the repository. The flag in
-// the file stays Adi's to set.
+// --approved never edits tester/config.json. It intercepts the request for that
+// file and answers with consentApproved:true, so the recording path can be
+// driven whatever the interlock says in the repository. Since 2026-08-01 the
+// shipped flag is true, so --approved is a no-op on main; it stays because the
+// interlock can go back to false and this must still be drivable when it does.
 //
 // A fake microphone WAV is needed for the recording paths. Point at one with
 // FAKE_MIC=/path/to/48k.wav; anything 48 kHz mono will do, including a copy of
@@ -150,17 +151,42 @@ async function driveTesterPage() {
   console.log('start enabled after both:', !(await page.isDisabled('#start')));
   await page.click('#start');
   await page.waitForSelector('#screen-session:not([hidden])');
-  await page.click('#play-ref');
-  await page.waitForFunction(() => !document.getElementById('record').disabled, null, { timeout: 20000 });
-  console.log('call shape             :', await page.textContent('#ref-shape'));
-  await page.click('#record');
-  await page.waitForTimeout(2500);
-  await page.click('#record');
-  await page.waitForSelector('#result:not([hidden])', { timeout: 20000 });
-  console.log('your shape             :', await page.textContent('#you-shape'));
 
-  // A second click must not open a second take. This is the bug it caught.
-  await page.click('#record', { force: true }).catch(() => {});
+  // Three calls, one take each. The loop is the point: what this catches is
+  // state left over from the previous call — a stale take, a stale reference, a
+  // tick box that carried across.
+  for (let i = 1; i <= 3; i++) {
+    await page.waitForFunction(() => document.getElementById('ref-shape').textContent !== '…', null, { timeout: 20000 });
+    console.log(`\n-- ${await page.textContent('#step-title')}`);
+    // Printed whole, not truncated: one call carries an extra sentence that
+    // exists only because it has to be read, so the driver has to show it.
+    console.log('  note                 :', await page.textContent('#call-note'));
+    console.log('  extra sentence       :', (await page.$('#call-note .call-warning')) ? 'yes' : 'none');
+    console.log('  result hidden at open:', await page.isHidden('#result'));
+    console.log('  record disabled first:', await page.isDisabled('#record'));
+
+    await page.click('#play-ref');
+    await page.waitForFunction(() => !document.getElementById('record').disabled, null, { timeout: 20000 });
+    console.log('  call shape           :', await page.textContent('#ref-shape'));
+    console.log('  button label         :', await page.textContent('#record'));
+
+    await page.click('#record');
+    await page.waitForTimeout(2500);
+    await page.click('#record');
+    await page.waitForSelector('#result:not([hidden])', { timeout: 20000 });
+    console.log('  your shape           :', await page.textContent('#you-shape'));
+
+    // A second click must not open a second take. This is the bug it caught.
+    await page.click('#record', { force: true }).catch(() => {});
+
+    // Tick a box on call 2 only, so the file can be checked for notes travelling
+    // with the take they belong to instead of pooling across the session.
+    if (i === 2) await page.check('#flags input[value="noisy-room"]');
+    await page.click('#next');
+  }
+
+  await page.waitForSelector('#screen-done:not([hidden])', { timeout: 20000 });
+  console.log('\nsession screen hidden  :', await page.isHidden('#screen-session'));
 
   const download = await Promise.all([
     page.waitForEvent('download'),
@@ -168,7 +194,15 @@ async function driveTesterPage() {
   ]).then(([d]) => d);
   const json = JSON.parse(await readFile(await download.path(), 'utf8'));
   console.log('download name          :', download.suggestedFilename());
-  console.log('metrics                :', JSON.stringify(json.take.metrics));
+  console.log('schema                 :', json.schema);
+  console.log('consentVersion         :', json.consentVersion);
+  console.log('takes                  :', json.takes.length);
+  for (const t of json.takes) {
+    console.log(`  ${t.reference.id}`);
+    console.log('    metrics    :', JSON.stringify(t.metrics));
+    console.log('    diagnostics:', JSON.stringify({ ...t.diagnostics, voicedRuns: `${t.diagnostics.voicedRuns.length} runs` }));
+    console.log('    notes      :', JSON.stringify(t.notes));
+  }
   console.log('bytes of json          :', JSON.stringify(json).length);
   const audioLike = JSON.stringify(json).match(/base64|data:audio|blob:/i);
   console.log('anything audio-shaped  :', audioLike ? audioLike[0] : 'none');

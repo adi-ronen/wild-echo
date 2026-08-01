@@ -21,6 +21,15 @@
 //    the visitor can read, so a "one-time hash" here would be theatre. The code
 //    in the link is a label that keeps ten people's results apart. Said as much
 //    on the page rather than pretending otherwise.
+//
+// Three calls, one take each, since 2026-08-01. The kill-line always asked for
+// 10 people x 3 calls; this page ran one call because the consent wording it
+// shipped with described one. That wording changed, so the page follows it. The
+// calls come in REFERENCES order — up, flat, down — the same order for everyone,
+// which means any order effect is shared across all thirty recordings rather
+// than randomised away. That is a known limitation, written down rather than
+// hidden: the bet does not ask for counterbalancing and thirty recordings could
+// not measure it if it did.
 
 import { contour, traceability, describeShape, KILL_LINE_1A, ANALYSIS_RATE } from '../src/pitch.js';
 import { recordClip, toAnalysisSamples, decodeToBuffer, resample, playSequence } from '../src/audio.js';
@@ -28,17 +37,20 @@ import { REFERENCES, loadReferenceBuffer } from '../src/reference.js';
 import { drawTraces, COLORS } from '../src/draw.js';
 
 const el = (id) => document.getElementById(id);
-const REFERENCE = REFERENCES[0];
 
 const state = {
   config: null,
-  reference: null,   // { buffer, contour }
-  take: null,        // { buffer, contour, metrics, envelope, meta } — set once, never replaced
+  callIndex: 0,      // which of REFERENCES is on screen
+  reference: null,   // { buffer, contour } for the current call
+  take: null,        // the current call's take — set once, never replaced
+  takes: [],         // one finished entry per call, in call order
   recorder: null,
   busy: false,
-  heardCall: 0,
+  heardCall: 0,      // times this call was played, reset per call
   startedAt: null,
 };
+
+const current = () => REFERENCES[state.callIndex];
 
 // ------------------------------------------------------------------- startup
 
@@ -73,11 +85,41 @@ async function startSession() {
   el('screen-consent').hidden = true;
   el('screen-session').hidden = false;
   state.startedAt = new Date().toISOString();
+  await loadCall();
+}
 
-  el('call-note').textContent = `${REFERENCE.label}. ${REFERENCE.note}`;
+/** Put the current call on screen, from a clean slate. */
+async function loadCall() {
+  const ref = current();
+  state.reference = null;
+  state.take = null;
+  state.heardCall = 0;
+
+  el('step-title').textContent = `Call ${state.callIndex + 1} of ${REFERENCES.length} — hear the call`;
+
+  // The per-call note slot. `testerNote` is the pigeon sentence and it goes on
+  // its own line rather than at the end of the paragraph: a sentence appended to
+  // 110 characters of provenance is a sentence nobody reads, and this one exists
+  // precisely because it has to be read.
+  const note = el('call-note');
+  note.textContent = '';
+  note.append(`${ref.label} ${ref.note}`);
+  if (ref.testerNote) {
+    const warn = document.createElement('strong');
+    warn.className = 'call-warning';
+    warn.textContent = ref.testerNote;
+    note.append(warn);
+  }
+  el('result').hidden = true;
+  el('play-ref').disabled = false;
+  el('record').disabled = true;
+  el('record').textContent = 'Record my one sound';
+  el('next').textContent = state.callIndex + 1 < REFERENCES.length ? 'Next call' : 'Finish';
+  for (const box of document.querySelectorAll('#flags input')) box.checked = false;
+  setStatus('Hear the call first — as many times as you like.');
 
   try {
-    const buffer = await loadReferenceBuffer(REFERENCE);
+    const buffer = await loadReferenceBuffer(ref);
     const samples = await resample(buffer);
     state.reference = { buffer, contour: contour(samples, ANALYSIS_RATE) };
     el('ref-shape').textContent = describeShape(state.reference.contour);
@@ -88,13 +130,30 @@ async function startSession() {
   }
 }
 
+/**
+ * Bank the finished take and move on. The take is banked here rather than at
+ * record time so the "how did it go" boxes for this call travel with it.
+ */
+function nextCall() {
+  if (!state.take) return;
+  state.takes.push(finishedTake(state.take, state.reference, current()));
+
+  if (state.callIndex + 1 < REFERENCES.length) {
+    state.callIndex += 1;
+    loadCall();
+    return;
+  }
+  el('screen-session').hidden = true;
+  el('screen-done').hidden = false;
+}
+
 async function playReference() {
   if (!state.reference) return;
   setStatus('Listen…');
   await playSequence([state.reference.buffer]);
   state.heardCall += 1;
   el('record').disabled = false;
-  setStatus('When you are ready: one take. Hear it again as many times as you like first.');
+  setStatus('When you are ready: one sound, then stop. Hear it again as many times as you like first.');
 }
 
 function toggleRecord() {
@@ -118,7 +177,7 @@ async function record() {
 
   el('record').textContent = 'Stop';
   el('record').classList.add('recording');
-  setStatus('Recording. Make the call.');
+  setStatus('Recording — one sound, then stop.');
 
   try {
     const blob = await state.recorder.blob;
@@ -126,7 +185,8 @@ async function record() {
     el('record').textContent = 'Recorded';
     el('record').classList.remove('recording');
     el('record').disabled = true;
-    el('step-title').textContent = 'Step 2 of 2 — what came out';
+    el('play-ref').disabled = true;
+    el('step-title').textContent = `Call ${state.callIndex + 1} of ${REFERENCES.length} — what came out`;
     setStatus('Reading the pitch. Nothing has been sent anywhere.');
 
     const samples = await toAnalysisSamples(blob);
@@ -152,9 +212,10 @@ async function record() {
       { contour: state.reference.contour, color: COLORS.reference, width: 3 },
       { contour: c, color: COLORS.you, width: 2.5 },
     ]);
+    const last = state.callIndex + 1 === REFERENCES.length;
     setStatus(state.take.metrics.voiced
-      ? 'That is your take. Listen to the two side by side if you like, then save the file.'
-      : 'No pitch was found in that take. That is a real result and it counts — save the file anyway.');
+      ? `That is your take. Listen to the two side by side if you like, then ${last ? 'finish' : 'go on to the next call'}.`
+      : `No pitch was found in that take. That is a real result and it counts — ${last ? 'finish' : 'go on to the next call'} anyway.`);
   } finally {
     state.busy = false;
   }
@@ -165,7 +226,9 @@ async function compare() {
   const seq = [state.reference.buffer, state.take.buffer, state.reference.buffer, state.take.buffer];
   const names = ['The call', 'You', 'The call', 'You'];
   await playSequence(seq, 0.35, (i) => setStatus(`${names[i]}…`));
-  setStatus('That is the whole session. Save the file and send it back.');
+  setStatus(state.callIndex + 1 === REFERENCES.length
+    ? 'That is the last call. Press Finish, then save the file.'
+    : 'Go on to the next call when you are ready.');
 }
 
 // ------------------------------------------------------------------- results
@@ -173,37 +236,42 @@ async function compare() {
 // Numbers only, and every one of them is listed on the consent screen. No
 // audio, no free text, nothing typed except the tester code.
 
-function payload() {
-  const t = state.take;
+/** Freeze one call's take into the shape that goes in the file. */
+function finishedTake(t, reference, ref) {
   return {
-    schema: 'wild-echo/tester-session/2',
+    reference: {
+      id: ref.id,
+      species: ref.species,
+      synthesized: ref.synthesized,
+      contour: packContour(reference.contour),
+    },
+    ...t.meta,
+    analysisRate: ANALYSIS_RATE,
+    hopSeconds: t.contour.hopSeconds,
+    killLine1A: KILL_LINE_1A,
+    metrics: t.metrics,
+    diagnostics: diagnostics(t.contour),
+    // [time, f0 Hz or null, YIN confidence, frame level in dBFS]
+    frames: t.contour.frames.map((f, i) => [
+      +f.t.toFixed(3),
+      f.f0 === null ? null : +f.f0.toFixed(1),
+      +f.confidence.toFixed(3),
+      t.envelope[i] ?? null,
+    ]),
+    notes: [...document.querySelectorAll('#flags input:checked')].map((c) => c.value),
+  };
+}
+
+function payload() {
+  return {
+    schema: 'wild-echo/tester-session/3',
     consentVersion: state.config.consentVersion,
     deleteBy: state.config.deleteBy,
     testerCode: el('tester-code').value.trim().slice(0, 12) || 'unlabelled',
     startedAt: state.startedAt,
     finishedAt: new Date().toISOString(),
     device: describeDevice(),
-    reference: {
-      id: REFERENCE.id,
-      species: REFERENCE.species,
-      synthesized: REFERENCE.synthesized,
-      contour: packContour(state.reference.contour),
-    },
-    take: {
-      ...t.meta,
-      analysisRate: ANALYSIS_RATE,
-      hopSeconds: t.contour.hopSeconds,
-      killLine1A: KILL_LINE_1A,
-      metrics: t.metrics,
-      // [time, f0 Hz or null, YIN confidence, frame level in dBFS]
-      frames: t.contour.frames.map((f, i) => [
-        +f.t.toFixed(3),
-        f.f0 === null ? null : +f.f0.toFixed(1),
-        +f.confidence.toFixed(3),
-        t.envelope[i] ?? null,
-      ]),
-    },
-    notes: [...document.querySelectorAll('#flags input:checked')].map((c) => c.value),
+    takes: state.takes,
   };
 }
 
@@ -220,7 +288,7 @@ function finish() {
   a.download = name;
   a.click();
   URL.revokeObjectURL(url);
-  el('finish-status').textContent = `Saved ${name}. Send that file back. Your recording itself is still only on this device, and goes when you close the tab.`;
+  el('finish-status').textContent = `Saved ${name}. Send that file back. Your recordings themselves are still only on this device, and go when you close the tab.`;
 }
 
 // Some phones make saving a file awkward. This is the same data as text, for
@@ -234,6 +302,78 @@ async function copyText() {
     console.error(err);
     el('finish-status').textContent = 'The browser would not let the page use the clipboard. Use "Save my results file" instead.';
   }
+}
+
+// -------------------------------------------------------------- diagnostics
+//
+// Two things that describe a take without judging it, both known failure modes
+// of condition A found before any of these thirty recordings existed:
+//
+//   bursts  — separate runs of voiced sound. The corpus probe (2026-07-30) found
+//             condition A's gap clause failing takes because the person repeated
+//             the call, not because their voice was untrackable: median four
+//             bursts a clip, pigeon coo 0 of 19.
+//   debris  — voiced runs shorter than 100 ms. Nine takes on 2026-07-31 showed a
+//             10-60 ms fragment at the edge of a clip inflating the vocalised
+//             span (its denominator is first-voiced to last-voiced) and sinking
+//             coverage with nothing repeated at all.
+//
+// Neither number touches condition A. `traceability()` in src/pitch.js is
+// unmodified and is the only thing that sets passesA. Ori's call, 2026-08-01:
+// the recorder is NOT changed to suppress sub-100 ms debris — cleaning the
+// instrument after freezing the test is exactly what we said we would not do.
+// So the debris is measured, carried in the file, and reported in the verdict
+// document if it mattered. It is never subtracted, and it never renegotiates a
+// threshold.
+
+const UTTERANCE_GAP_MS = 150; // the corpus probe's number, unchanged, so the
+                              // burst counts are comparable to its 57 clips
+const DEBRIS_MAX_MS = 100;    // chosen 2026-07-31 for a diagnosis; judges nothing
+
+/** Maximal runs of voiced frames, as [start ms, length ms] pairs. */
+function voicedRuns({ hopSeconds, frames }) {
+  const ms = hopSeconds * 1000;
+  const runs = [];
+  let start = -1;
+  frames.forEach((f, i) => {
+    if (f.f0 !== null && start < 0) start = i;
+    if (f.f0 === null && start >= 0) { runs.push([start, i - start]); start = -1; }
+  });
+  if (start >= 0) runs.push([start, frames.length - start]);
+  return runs.map(([i, n]) => [+(i * ms).toFixed(0), +(n * ms).toFixed(0)]);
+}
+
+/**
+ * How many separate bursts of voiced sound the take contains. Character-for-
+ * character the corpus probe's rule: a gap of UTTERANCE_GAP_MS or more ends a
+ * burst. Deliberately under condition A's 250 ms bar — this counts utterances,
+ * it does not judge them.
+ */
+function bursts({ hopSeconds, frames }) {
+  const gapFrames = Math.ceil((UTTERANCE_GAP_MS / 1000) / hopSeconds);
+  let count = 0, run = 0, inVoiced = false;
+  for (const f of frames) {
+    if (f.f0 !== null) {
+      if (!inVoiced) { count++; inVoiced = true; }
+      run = 0;
+    } else if (inVoiced && ++run >= gapFrames) {
+      inVoiced = false;
+    }
+  }
+  return count;
+}
+
+function diagnostics(c) {
+  const runs = voicedRuns(c);
+  const debris = runs.filter(([, ms]) => ms < DEBRIS_MAX_MS);
+  return {
+    burstGapMs: UTTERANCE_GAP_MS,
+    bursts: bursts(c),
+    debrisMaxMs: DEBRIS_MAX_MS,
+    debrisRuns: debris.length,
+    debrisTotalMs: debris.reduce((n, [, ms]) => n + ms, 0),
+    voicedRuns: runs,
+  };
 }
 
 // --------------------------------------------------------------------- bits
@@ -299,5 +439,6 @@ function setStatus(s) { el('status').textContent = s; }
 el('play-ref').addEventListener('click', playReference);
 el('record').addEventListener('click', toggleRecord);
 el('compare').addEventListener('click', compare);
+el('next').addEventListener('click', nextCall);
 el('finish').addEventListener('click', finish);
 el('copy').addEventListener('click', copyText);
