@@ -75,7 +75,10 @@ async function loadReference() {
 // ------------------------------------------------------------------ actions
 
 async function playReference() {
-  if (!state.reference) return;
+  if (!state.reference) {
+    setStatus('The call has not loaded yet. Wait a moment, or reload the page.');
+    return;
+  }
   setStatus('Playing the call…');
   await playSequence([state.reference.buffer]);
   setStatus('Now you try.');
