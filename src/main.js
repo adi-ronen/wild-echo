@@ -48,6 +48,7 @@ function changeCall() {
   el('metrics').innerHTML = '<p class="hint">Record something to find out.</p>';
   el('compare').disabled = true;
   el('export').disabled = true;
+  setStatus('Loading the new call…');
   redraw();
   loadReference();
 }
