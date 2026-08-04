@@ -31,7 +31,7 @@ function fillCallPicker() {
   for (const ref of REFERENCES) {
     const opt = document.createElement('option');
     opt.value = ref.id;
-    opt.textContent = `${ref.animal} — ${ref.shape}`;
+    opt.textContent = ref.animal;
     sel.appendChild(opt);
   }
   sel.value = current.id;
