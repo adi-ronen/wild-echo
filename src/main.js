@@ -6,6 +6,13 @@ import { drawTraces, COLORS } from './draw.js';
 const el = (id) => document.getElementById(id);
 const canvas = el('traces');
 
+// Metrics, subject label and Save are the instrument, not the page. Anyone who
+// arrives without ?lab=1 gets the comparison only; the instrument stays
+// reachable at a URL I can hand a tester. See rnd/tal-to-noam/2026-08-02.md.
+if (new URLSearchParams(location.search).get('lab') === '1') {
+  document.body.classList.add('lab-mode');
+}
+
 const state = {
   reference: null, // { buffer, contour }
   you: null,       // { buffer, blob, contour, metrics }
