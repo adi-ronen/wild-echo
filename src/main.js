@@ -6,6 +6,13 @@ import { drawTraces, COLORS } from './draw.js';
 const el = (id) => document.getElementById(id);
 const canvas = el('traces');
 
+// Metrics, subject label and Save are the instrument, not the page. Anyone who
+// arrives without ?lab=1 gets the comparison only; the instrument stays
+// reachable at a URL I can hand a tester. See rnd/tal-to-noam/2026-08-02.md.
+if (new URLSearchParams(location.search).get('lab') === '1') {
+  document.body.classList.add('lab-mode');
+}
+
 const state = {
   reference: null, // { buffer, contour }
   you: null,       // { buffer, blob, contour, metrics }
@@ -31,7 +38,7 @@ function fillCallPicker() {
   for (const ref of REFERENCES) {
     const opt = document.createElement('option');
     opt.value = ref.id;
-    opt.textContent = `${ref.animal} — ${ref.shape}`;
+    opt.textContent = ref.animal;
     sel.appendChild(opt);
   }
   sel.value = current.id;
@@ -48,8 +55,16 @@ function changeCall() {
   el('metrics').innerHTML = '<p class="hint">Record something to find out.</p>';
   el('compare').disabled = true;
   el('export').disabled = true;
+  setStatus('Loading the new call…');
   redraw();
   loadReference();
+}
+
+function nextAnimal() {
+  const i = REFERENCES.findIndex((r) => r.id === current.id);
+  const next = REFERENCES[(i + 1) % REFERENCES.length];
+  el('call').value = next.id;
+  changeCall();
 }
 
 async function loadReference() {
@@ -74,7 +89,10 @@ async function loadReference() {
 // ------------------------------------------------------------------ actions
 
 async function playReference() {
-  if (!state.reference) return;
+  if (!state.reference) {
+    setStatus('The call has not loaded yet. Wait a moment, or reload the page.');
+    return;
+  }
   setStatus('Playing the call…');
   await playSequence([state.reference.buffer]);
   setStatus('Now you try.');
@@ -86,7 +104,7 @@ async function startRecording() {
     state.recorder = await recordClip(8);
   } catch (err) {
     state.busy = false;
-    setStatus('No microphone. You can still hear the call and watch its trace — that works without one.');
+    setStatus('No microphone. You can still hear each call and watch its shape — press "Next animal" to keep going without one.');
     console.error(err);
     return;
   }
@@ -203,6 +221,7 @@ el('play-ref').addEventListener('click', playReference);
 el('record').addEventListener('click', toggleRecord);
 el('compare').addEventListener('click', compare);
 el('export').addEventListener('click', exportSession);
+el('next-animal').addEventListener('click', nextAnimal);
 window.addEventListener('resize', redraw);
 
 fillCallPicker();
