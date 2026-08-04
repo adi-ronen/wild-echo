@@ -60,6 +60,13 @@ function changeCall() {
   loadReference();
 }
 
+function nextAnimal() {
+  const i = REFERENCES.findIndex((r) => r.id === current.id);
+  const next = REFERENCES[(i + 1) % REFERENCES.length];
+  el('call').value = next.id;
+  changeCall();
+}
+
 async function loadReference() {
   let buffer;
   try {
@@ -97,7 +104,7 @@ async function startRecording() {
     state.recorder = await recordClip(8);
   } catch (err) {
     state.busy = false;
-    setStatus('No microphone. You can still hear the call and watch its trace — that works without one.');
+    setStatus('No microphone. You can still hear each call and watch its shape — press "Next animal" to keep going without one.');
     console.error(err);
     return;
   }
@@ -214,6 +221,7 @@ el('play-ref').addEventListener('click', playReference);
 el('record').addEventListener('click', toggleRecord);
 el('compare').addEventListener('click', compare);
 el('export').addEventListener('click', exportSession);
+el('next-animal').addEventListener('click', nextAnimal);
 window.addEventListener('resize', redraw);
 
 fillCallPicker();
