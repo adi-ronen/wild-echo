@@ -1,6 +1,6 @@
 import { contour, traceability, describeShape, KILL_LINE_1A, ANALYSIS_RATE } from './pitch.js';
 import { recordClip, toAnalysisSamples, decodeToBuffer, resample, playSequence } from './audio.js';
-import { REFERENCES, loadReferenceBuffer } from './reference.js';
+import { PROTOTYPE_REFERENCES as REFERENCES, loadReferenceBuffer } from './reference.js';
 import { drawTraces, COLORS } from './draw.js';
 
 const el = (id) => document.getElementById(id);
