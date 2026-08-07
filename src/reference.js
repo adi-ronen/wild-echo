@@ -64,6 +64,24 @@ export const REFERENCES = [
   },
 ];
 
+// Prototype only. Same three calls, longer loon — Noam's re-cut order after the
+// cheap tier (2026-08-03), loon first. The tester (tester/tester.js) keeps
+// importing REFERENCES above and stays on the short clip: kill-line #1 runs
+// through 2026-08-14 and changing a tester's clip mid-run breaks comparability
+// with the takes already collected against it. Swan and pigeon are untouched.
+export const PROTOTYPE_REFERENCES = REFERENCES.map((ref) =>
+  ref.id === 'black-throated-loon-XC803905'
+    ? {
+        ...ref,
+        id: 'black-throated-loon-XC803905-long',
+        url: new URL('../assets/audio/black-throated-loon-XC803905-long-clip.wav', import.meta.url).href,
+        note: 'One continuous wail, 3.81 s, trimmed from a longer recording made on a Swedish lake in May.',
+        // Measured 2026-08-07 by this repo's own src/pitch.js over the shipped clip.
+        shape: 'rises 1.4 octaves overall across 3.2 octaves of range, with several turns rather than one smooth bend',
+      }
+    : ref
+);
+
 // Fallback only. Never a silent substitute for a real call — see the header.
 export const SYNTH_FALLBACK = {
   id: 'placeholder-howl',

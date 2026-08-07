@@ -18,6 +18,21 @@
       "synthesized": false
     },
     {
+      "id": "black-throated-loon-XC803905-long",
+      "kind": "audio",
+      "path": "assets/audio/black-throated-loon-XC803905-long-clip.wav",
+      "description": "One continuous wail of a black-throated loon (Gavia arctica), trimmed from XC803905 (3.81 s, from 21.98 s to 25.79 s of the source), mixed to mono, resampled to 22050 Hz, peak-normalised to -1 dBFS, 20 ms fades at both ends. No other processing. Prototype-only, longer-clip re-cut per Noam's order — the tester stays on the 0.90 s clip above for comparability until kill-line #1's 2026-08-14 verdict.",
+      "source": "https://xeno-canto.org/803905",
+      "sourceDetail": "Recorded 2023-05-19 at Leksand Municipality, Dalarnas län, Sweden, by Grégoire Chauvot. Quality A, song, male, field recording, no playback used. Source download is a 122.4 s 48 kHz stereo WAV, sha1 74804ef4ce7e408d7e1c7eca5135e32d1f915ff4, re-downloaded and matched 2026-08-07. This clip: sha1 2a58e9ed14b83fe96928f8cde052cb7e42619565.",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "attribution": "Grégoire Chauvot, XC803905, xeno-canto.org/803905. CC0 1.0 waives the attribution requirement; we credit anyway.",
+      "verificationNote": "Licence re-read off the recording's own page at xeno-canto.org/803905 on 2026-08-07: 'License: Creative Commons Public Domain Dedication 1.0', linking creativecommons.org/publicdomain/zero/1.0/. Verified per file, not per site.",
+      "verified": "2026-08-07",
+      "recheck": "2027-02-07",
+      "synthesized": false
+    },
+    {
       "id": "whooper-swan-XC803772",
       "kind": "audio",
       "path": "assets/audio/whooper-swan-XC803772-clip.wav",
