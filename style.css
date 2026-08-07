@@ -21,6 +21,19 @@ body {
 
 #app { max-width: 860px; margin: 0 auto; padding: 28px 20px 48px; }
 
+.by-zvuvim {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  color: var(--dim);
+  text-decoration: none;
+  font-size: 13px;
+}
+.by-zvuvim:hover { color: var(--ink); }
+.by-zvuvim svg { width: 18px; height: 18px; }
+.by-zvuvim strong { font-family: 'Fredoka', sans-serif; font-weight: 600; }
+
 header h1 { margin: 0; font-size: 30px; letter-spacing: -0.01em; }
 .tagline { margin: 4px 0 14px; color: var(--dim); }
 
