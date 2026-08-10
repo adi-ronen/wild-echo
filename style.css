@@ -124,6 +124,16 @@ select:focus-visible { outline: 2px solid var(--you); outline-offset: 2px; }
 .listen-cta #compare:hover:not(:disabled) { background: #4bb8d1; }
 .listen-cta .hint { margin: 10px 0 0; }
 
+.panel-details { margin-bottom: 18px; }
+.panel-details summary {
+  cursor: pointer;
+  color: var(--dim);
+  font-size: 13px;
+  padding: 4px 0;
+}
+.panel-details summary:hover { color: var(--ink); }
+.panel-details .panel:first-of-type { margin-top: 12px; }
+
 .described p { margin: 0 0 8px; }
 
 dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; margin: 0 0 12px; }

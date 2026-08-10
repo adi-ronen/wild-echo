@@ -57,26 +57,30 @@
     </p>
     <p class="hint" id="ref-credit">…</p>
 
-    <section class="panel" aria-labelledby="traces-h">
-      <h2 id="traces-h">Pitch over time</h2>
-      <canvas id="traces" width="800" height="320"
-              aria-label="Two pitch contours drawn on shared axes: the reference call and your recording."></canvas>
-      <p class="legend">
-        <span class="swatch ref"></span> the call
-        <span class="swatch you"></span> you
-        <span class="hint">A break in a line means no pitch was found there.</span>
-      </p>
-    </section>
+    <details class="panel-details">
+      <summary>See the pitch shapes</summary>
 
-    <section class="panel described" aria-labelledby="described-h">
-      <h2 id="described-h">The same thing, in words</h2>
-      <p><strong>The call:</strong> <span id="ref-shape">…</span></p>
-      <p><strong>You:</strong> <span id="you-shape">Nothing recorded yet.</span></p>
-      <p class="hint">
-        This is here so the comparison does not depend on seeing the canvas.
-        Every number in it is measured from the audio.
-      </p>
-    </section>
+      <section class="panel" aria-labelledby="traces-h">
+        <h2 id="traces-h">Pitch over time</h2>
+        <canvas id="traces" width="800" height="320"
+                aria-label="Two pitch contours drawn on shared axes: the reference call and your recording."></canvas>
+        <p class="legend">
+          <span class="swatch ref"></span> the call
+          <span class="swatch you"></span> you
+          <span class="hint">A break in a line means no pitch was found there.</span>
+        </p>
+      </section>
+
+      <section class="panel described" aria-labelledby="described-h">
+        <h2 id="described-h">The same thing, in words</h2>
+        <p><strong>The call:</strong> <span id="ref-shape">…</span></p>
+        <p><strong>You:</strong> <span id="you-shape">Nothing recorded yet.</span></p>
+        <p class="hint">
+          This is here so the comparison does not depend on seeing the canvas.
+          Every number in it is measured from the audio.
+        </p>
+      </section>
+    </details>
 
     <section class="panel lab-only" aria-labelledby="metrics-h">
       <h2 id="metrics-h">Was the pitch trackable?</h2>
