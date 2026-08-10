@@ -170,16 +170,12 @@ function renderMetrics(m) {
     el('metrics').innerHTML = '<p class="fail">No voiced sound found.</p>';
     return;
   }
-  const pass = m.passesA;
   el('metrics').innerHTML = `
     <dl>
       <dt>Voiced span</dt><dd>${m.spanSeconds.toFixed(2)} s</dd>
-      <dt>Coverage</dt><dd>${(m.coverage * 100).toFixed(0)}%
-        <span class="thr">(needs ≥ ${KILL_LINE_1A.minCoverage * 100}%)</span></dd>
-      <dt>Longest interior gap</dt><dd>${m.maxGapMs.toFixed(0)} ms
-        <span class="thr">(needs ≤ ${KILL_LINE_1A.maxGapMs} ms)</span></dd>
+      <dt>Coverage</dt><dd>${(m.coverage * 100).toFixed(0)}%</dd>
+      <dt>Longest interior gap</dt><dd>${m.maxGapMs.toFixed(0)} ms</dd>
     </dl>
-    <p class="${pass ? 'pass' : 'fail'}">Kill-line #1A: ${pass ? 'this track passes' : 'this track fails'}</p>
     <p class="note">Measured, not scored. Coverage is voiced frames divided by frames
     between your first and last voiced frame. Nothing here is a judgment of the
     imitation — only of whether the pitch was trackable at all.</p>`;
