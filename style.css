@@ -104,6 +104,36 @@ select:focus-visible { outline: 2px solid var(--you); outline-offset: 2px; }
 
 #status { flex-basis: 100%; margin: 4px 0 0; color: var(--dim); font-size: 14px; min-height: 1.5em; }
 
+.listen-cta {
+  text-align: center;
+  margin: 0 0 24px;
+  padding: 22px 18px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #16324a, #11141b);
+  border: 1px solid var(--you);
+}
+.listen-cta #compare {
+  background: var(--you);
+  border-color: var(--you);
+  color: #06222c;
+  font-weight: 600;
+  font-size: 17px;
+  padding: 14px 28px;
+  border-radius: 10px;
+}
+.listen-cta #compare:hover:not(:disabled) { background: #4bb8d1; }
+.listen-cta .hint { margin: 10px 0 0; }
+
+.panel-details { margin-bottom: 18px; }
+.panel-details summary {
+  cursor: pointer;
+  color: var(--dim);
+  font-size: 13px;
+  padding: 4px 0;
+}
+.panel-details summary:hover { color: var(--ink); }
+.panel-details .panel:first-of-type { margin-top: 12px; }
+
 .described p { margin: 0 0 8px; }
 
 dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; margin: 0 0 12px; }
