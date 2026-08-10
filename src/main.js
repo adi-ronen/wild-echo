@@ -55,6 +55,7 @@ function changeCall() {
   el('metrics').innerHTML = '<p class="hint">Record something to find out.</p>';
   el('compare').disabled = true;
   el('export').disabled = true;
+  el('listen-cta').hidden = true;
   setStatus('Loading the new call…');
   redraw();
   loadReference();
@@ -130,6 +131,7 @@ async function startRecording() {
     redraw();
     el('compare').disabled = false;
     el('export').disabled = false;
+    el('listen-cta').hidden = false;
     setStatus(metrics.voiced
       ? `Attempt ${state.attempt}. Compare, then go again.`
       : 'Nothing voiced was found in that take. Closer to the mic, and louder.');
