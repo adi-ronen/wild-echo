@@ -198,6 +198,7 @@ function exportSession() {
     attempt: state.attempt,
     analysisRate: ANALYSIS_RATE,
     killLine1A: KILL_LINE_1A,
+    notice: el('notice').value.trim() || null,
     metrics: state.you.metrics,
     contour: state.you.contour.frames.map((f) => [
       +f.t.toFixed(3),

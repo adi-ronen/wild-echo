@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wild Echo — prototype</title>
 <link rel="icon" href="data:,">
-<meta name="description" content="Hear an animal call, make the call yourself, and watch both pitch lines on the same axes.">
+<meta name="description" content="Hear an animal call, make your own, and listen to them side by side.">
 <meta name="color-scheme" content="dark">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&display=swap" rel="stylesheet">
@@ -31,7 +31,7 @@
       <span>by <strong>Zvuvim</strong></span>
     </a>
     <h1>Wild Echo</h1>
-    <p class="tagline">Hear the call. Make the call. Watch both lines.</p>
+    <p class="tagline">Hear the call. Make your own. Listen to them side by side.</p>
   </header>
 
   <main>
@@ -48,6 +48,10 @@
     <section class="listen-cta" id="listen-cta" hidden>
       <button id="compare" disabled>Call, you, call, you</button>
       <p class="hint">Hear your voice right next to the animal's.</p>
+      <div class="notice-row">
+        <label for="notice">What did you notice? <span class="hint">(optional)</span></label>
+        <textarea id="notice" rows="2" placeholder="Anything you noticed — skip if nothing comes to mind"></textarea>
+      </div>
     </section>
 
     <p class="warn" role="note">
