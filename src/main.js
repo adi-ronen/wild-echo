@@ -150,7 +150,7 @@ function toggleRecord() {
 async function compare() {
   if (!state.you || !state.reference) return;
   const seq = [state.reference.buffer, state.you.buffer, state.reference.buffer, state.you.buffer];
-  const names = ['The call', 'You', 'The call', 'You'];
+  const names = [current.animal, 'You', current.animal, 'You'];
   setStatus('Listen: call, you, call, you.');
   await playSequence(seq, 0.35, (i) => setStatus(`${names[i]}…`));
   setStatus('Go again and watch your line move.');
